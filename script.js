@@ -53,3 +53,28 @@ firebase.database().ref('messages/').once('value', (snapshot) => {
     });
     analyzeSentiment(allMessages).then(sentiment => console.log("Sentimento da reunião:", sentiment));
 });
+
+
+
+
+
+
+
+async function chatWithAI(message) {
+    const response = await fetch('https://api.openai.com/v1/engines/text-davinci-003/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer YOUR_API_KEY`
+        },
+        body: JSON.stringify({
+            prompt: message,
+            max_tokens: 50
+        })
+    });
+    const data = await response.json();
+    console.log(data.choices[0].text.trim());
+}
+
+// Exemplo de uso
+chatWithAI("Olá, qual é o seu nome?");

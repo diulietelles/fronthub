@@ -1,12 +1,24 @@
 <!-- Adicionando o container da videoconferência -->
 <div id="meet"></div>
 
+    <link rel="stylesheet" href="style.css"> <!-- Conecte ao arquivo CSS -->
+</head>
+<body>
+    <div id="office">
+        <!-- Aqui estarão os bonequinhos (avatares) -->
+        <div class="avatar" id="avatar1"></div>
+        <div class="avatar" id="avatar2"></div>
+        <div class="avatar" id="avatar3"></div>
+    </div>
+</body>
+</html>
+
 <!-- Script para integrar o Jitsi -->
 <script src="https://meet.jit.si/external_api.js"></script>
 <script>
   const domain = "meet.jit.si";
   const options = {
-      roomName: "HarmonyHubRoom", // Nome da sala
+      roomName: "FrontHub", // Nome da sala
       width: 700,
       height: 500,
       parentNode: document.getElementById("meet"),
@@ -62,3 +74,72 @@
        });
    });
 </script>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Office</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+        #office { width: 80vw; height: 80vh; background: #ddd; border-radius: 10px; position: relative; overflow: hidden; }
+        .zone { position: absolute; padding: 20px; border-radius: 8px; }
+        #meetingZone { top: 10%; left: 10%; width: 30%; height: 30%; background: rgba(255, 200, 0, 0.2); }
+        #workZone { top: 10%; right: 10%; width: 30%; height: 30%; background: rgba(0, 200, 255, 0.2); }
+        #avatar { position: absolute; width: 40px; height: 40px; background: #ff6347; border-radius: 50%; top: 50%; left: 50%; }
+    </style>
+</head>
+<body>
+    <div id="office">
+        <div id="meetingZone" class="zone">Meeting Zone</div>
+        <div id="workZone" class="zone">Work Zone</div>
+        <div id="avatar"></div>
+    </div>
+</body>
+</html>
+
+<script>
+    const avatar = document.getElementById('avatar');
+    let posX = 50, posY = 50;
+
+    document.addEventListener('keydown', (e) => {
+        switch (e.key) {
+            case 'ArrowUp': posY = Math.max(0, posY - 5); break;
+            case 'ArrowDown': posY = Math.min(100, posY + 5); break;
+            case 'ArrowLeft': posX = Math.max(0, posX - 5); break;
+            case 'ArrowRight': posX = Math.min(100, posX + 5); break;
+        }
+        avatar.style.top = posY + '%';
+        avatar.style.left = posX + '%';
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.0/simplepeer.min.js"></script>
+<script>
+    let peer = new SimplePeer({ initiator: location.hash === '#init', trickle: false });
+    
+    peer.on('signal', data => {
+        document.getElementById('yourId').value = JSON.stringify(data);
+    });
+
+    document.getElementById('connect').addEventListener('click', () => {
+        const otherId = JSON.parse(document.getElementById('otherId').value);
+        peer.signal(otherId);
+    });
+
+    peer.on('stream', stream => {
+        const video = document.createElement('video');
+        document.body.append(video);
+        video.srcObject = stream;
+        video.play();
+    });
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+        peer.addStream(stream);
+    });
+</script>
+<div class="avatar" id="avatar1"></div>
+<div class="avatar" id="avatar2"></div>
+<div class="avatar" id="avatar3"></div>
