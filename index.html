@@ -1,0 +1,64 @@
+<!-- Adicionando o container da videoconferência -->
+<div id="meet"></div>
+
+<!-- Script para integrar o Jitsi -->
+<script src="https://meet.jit.si/external_api.js"></script>
+<script>
+  const domain = "meet.jit.si";
+  const options = {
+      roomName: "HarmonyHubRoom", // Nome da sala
+      width: 700,
+      height: 500,
+      parentNode: document.getElementById("meet"),
+      userInfo: {
+          displayName: "User"
+      }
+  };
+  const api = new JitsiMeetExternalAPI(domain, options);
+</script>
+
+
+<form id="moodForm">
+    <label>Como você está se sentindo hoje?</label>
+    <select id="moodSelect">
+        <option value="baixo">Baixo</option>
+        <option value="médio">Médio</option>
+        <option value="alto">Alto</option>
+    </select>
+    <button type="button" onclick="submitMood()">Enviar</button>
+ </form>
+ 
+ <script>
+    // Função para enviar humor ao Firebase
+    function submitMood() {
+        const mood = document.getElementById('moodSelect').value;
+        // Código para salvar o mood no Firebase
+        firebase.database().ref('moods/').push({ mood });
+    }
+ </script>
+
+
+
+<div id="tasks"></div>
+<form id="taskForm">
+   <input type="text" id="taskInput" placeholder="Adicionar tarefa">
+   <button type="button" onclick="addTask()">Adicionar</button>
+</form>
+
+<script>
+   // Função para adicionar tarefas ao Firebase
+   function addTask() {
+       const task = document.getElementById('taskInput').value;
+       firebase.database().ref('tasks/').push({ task });
+       document.getElementById('taskInput').value = '';
+   }
+
+   // Exibir tarefas em tempo real
+   firebase.database().ref('tasks/').on('value', (snapshot) => {
+       const tasksDiv = document.getElementById('tasks');
+       tasksDiv.innerHTML = '';
+       snapshot.forEach((task) => {
+           tasksDiv.innerHTML += `<p>${task.val().task}</p>`;
+       });
+   });
+</script>
